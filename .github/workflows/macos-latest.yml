@@ -22,7 +22,8 @@ jobs:
     steps:
       - name: Checkout infra
         uses: actions/checkout@v4
-        path: infra
+        with:
+          path: infra
 
       # Runs a set of commands using the runners shell
       - name: Install Act
@@ -32,8 +33,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repo
         uses: actions/checkout@v4
-        repository: pointfreeco/swift-composable-architecture
-        path: repo
+        with:
+          repository: pointfreeco/swift-composable-architecture
+          path: repo
 
       - name: Start workflow
         run: |
