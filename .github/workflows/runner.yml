@@ -1,29 +1,50 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
+  # workflow dispatch with customized inputs: repo_url, commit_hash, event_name
   workflow_dispatch:
+    inputs:
+      machine:
+        description: "Machine type"
+        required: true
+        default: "macos-latest"
+      repo_url:
+        description: "Repository URL"
+        required: true
+      commit_hash:
+        description: "Commit hash"
+        required: true
+      event_name:
+        description: "Event name"
+        required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.machine }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Install Act
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          brew install act
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.repo_url }}
+          path: repo
+          ref: ${{ github.event.inputs.commit_hash }}
+
+      - name: Start workflow
+        run: |
+          cd repo
+          act ${{ github.event.inputs.event_name }} -P ${{ github.event.inputs.machine }}=-self-hosted
+
+      - name: Post workflow run
+        run: |
+          echo "finished workflow run"
