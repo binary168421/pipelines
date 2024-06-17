@@ -50,7 +50,7 @@ jobs:
       - name: Start workflow
         run: |
           cd repo
-          act ${{ github.event.inputs.event_name }} -P ${{ github.event.inputs.machine }}=-self-hosted
+          act -P ${{ github.event.inputs.machine }}=-self-hosted
 
       - name: Post workflow run
         run: |
