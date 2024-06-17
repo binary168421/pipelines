@@ -4,6 +4,9 @@ on:
   # workflow dispatch with customized inputs: repo_url, commit_hash, event_name
   workflow_dispatch:
     inputs:
+      run_id:
+        description: "Run ID"
+        required: true
       machine:
         description: "Machine type"
         required: true
@@ -16,6 +19,9 @@ on:
         required: true
       event_name:
         description: "Event name"
+        required: true
+      pull_credential:
+        description: "Pull credential"
         required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -36,8 +42,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.inputs.repo_url }}
           path: repo
+          repository: ${{ github.event.inputs.repo_url }}
+          token: ${{ github.event.inputs.pull_credential }}
           ref: ${{ github.event.inputs.commit_hash }}
 
       - name: Start workflow
